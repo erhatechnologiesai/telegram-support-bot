@@ -1,18 +1,165 @@
 # AI Telegram Support Bot
 
-A serverless-ready AI Telegram support bot with command dispatching, conversational memory, real-time ticket creation, and admin operational controls.
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?style=flat&logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110.0-009688?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
+[![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-Part of the **50 AI Automation Projects Portfolio** by [ERHA TECHNOLOGIES](https://github.com/erhatechnologiesai).
+An asynchronous Telegram Support Bot built with python-telegram-bot patterns, command dispatching, conversational query resolution, and automated support ticket logging.
 
 ---
 
-## Features
-- **Telegram Webhook Architecture**: Fast asynchronous event processing.
-- **Built-in System Commands**: `/start`, `/help`, `/status`, `/ticket`, `/reset`.
-- **Contextual Memory**: Tracks customer query history.
-- **Enterprise Status Reporting**: Real-time service uptime verification.
+## Key Features
 
-## Testing
+- **Complete**: Telegram Bot API webhook and polling support
+- **Standard**: command routing (/start, /help, /status, /ticket, /faq)
+- **Contextual**: conversational responses powered by dual-mode AI engine
+- **Support**: ticket logging with automatic tracking IDs for user queries
+- **Production**: rate limiting and error recovery middleware
+
+---
+
+## Architecture
+
+```mermaid
+flowchart LR
+    Telegram[Telegram Bot API] -->|Webhook Update| API[Telegram Webhook Handler]
+    API --> Dispatcher[Command & Message Dispatcher]
+    Dispatcher --> Commands[Command Handlers: /start, /help]
+    Dispatcher --> AI[Conversational AI Engine]
+    AI --> TicketService[Support Ticket Service]
+    Dispatcher --> Response[Telegram Message Dispatcher]
+```
+
+---
+
+## Tech Stack
+
+| Component | Technology | Purpose |
+|---|---|---|
+| **Runtime** | Python 3.12 | Core execution environment |
+| **API Framework** | FastAPI & Uvicorn | High-performance asynchronous REST endpoints |
+| **Data Validation** | Pydantic v2 | Strict schema validation and serialization |
+| **Domain Engine** | Dual-Mode (Local + LLM) | Production-ready AI logic with offline test capability |
+| **Testing** | Unittest & Pytest | Deterministic automated verification suite |
+
+---
+
+## Project Structure
+
+```text
+ai-telegram-support-bot/
+├── app/
+│   ├── __init__.py
+│   ├── api.py           # FastAPI routes and server definitions
+│   ├── config.py        # Environment variables and application settings
+│   ├── models.py        # Pydantic data schemas
+│   └── services/        # Core business and AI automation logic
+├── tests/
+│   ├── __init__.py
+│   └── test_telegram_bot.py   # Automated test suite
+├── .env.example         # Template for environment configuration
+├── .gitignore           # Python and runtime exclusions
+├── LICENSE              # MIT License
+├── README.md            # Comprehensive project documentation
+└── requirements.txt     # Python package dependencies
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10+ (Python 3.12 recommended)
+- `pip` package manager
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/erhatechnologiesai/ai-telegram-support-bot.git
+   cd ai-telegram-support-bot
+   ```
+
+2. **Create and activate a virtual environment:**
+   ```bash
+   python -m venv venv
+   # On Windows:
+   venv\Scripts\activate
+   # On macOS/Linux:
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure environment variables:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration if running in live mode
+   ```
+
+---
+
+## Running the Application
+
+Start the local development server with auto-reload:
+
+```bash
+python -m uvicorn app.api:app --reload --host 0.0.0.0 --port 8000
+```
+
+Once running, interactive documentation is accessible at:
+- **Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **ReDoc**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/` | Bot service health and configuration check |
+| `POST` | `/telegram-webhook` | Telegram update ingestion webhook |
+
+### Example Request
+
+```bash
+curl -X POST http://127.0.0.1:8000/telegram-webhook -H "Content-Type: application/json" -d '{"update_id": 9912, "message": {"chat": {"id": 12345}, "text": "/help"}}'
+```
+
+---
+
+## Running Tests
+
+Execute the automated test suite:
+
 ```bash
 python -m unittest tests/test_telegram_bot.py
 ```
+
+Or using pytest:
+
+```bash
+pytest tests/
+```
+
+All test cases are self-contained and run offline without requiring third-party API credentials.
+
+---
+
+## Security & Best Practices
+
+- **Zero Credential Leakage**: API tokens and secrets are loaded exclusively via environment variables and excluded by `.gitignore`.
+- **Strict Validation**: All incoming request payloads are strictly validated using Pydantic schemas.
+- **Fail-Safe Fallbacks**: Deterministic offline engines guarantee application continuity even during external provider outages.
+
+---
+
+## License
+
+This project is licensed under the terms of the [MIT License](LICENSE).
